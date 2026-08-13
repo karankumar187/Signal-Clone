@@ -278,3 +278,9 @@ export const ChevronUpIcon = ({ size = 16, color = "currentColor" }: { size?: nu
     <polyline points="18 15 12 9 6 15"></polyline>
   </svg>
 );
+
+export const SendIcon = ({ size = 20, color = "currentColor" }: { size?: number; color?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill={color}/>
+  </svg>
+);
