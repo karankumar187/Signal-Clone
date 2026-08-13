@@ -63,7 +63,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const rawUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const apiUrl = rawUrl.replace(/\/api\/?$/, "").replace(/\/$/, "");
     const socket = io(apiUrl, {
       path: "/socket.io",
       transports: ["websocket", "polling"],

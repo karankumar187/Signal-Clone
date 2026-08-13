@@ -199,6 +199,56 @@ def get_messages(
     
     return messages[::-1] # Return in chronological order
 
+@router.post("/{conversation_id}/messages", response_model=schemas.MessageResponse)
+async def create_message(
+    conversation_id: int,
+    request: schemas.MessageCreate,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    is_participant = db.query(models.Participant).filter(
+        models.Participant.conversation_id == conversation_id,
+        models.Participant.user_id == current_user.id
+    ).first()
+    
+    if not is_participant:
+        raise HTTPException(status_code=403, detail="Not a participant in this conversation")
+
+    participants = db.query(models.Participant).filter(
+        models.Participant.conversation_id == conversation_id
+    ).all()
+
+    new_message = models.Message(
+        conversation_id=conversation_id,
+        sender_id=current_user.id,
+        content=request.content,
+        msg_type=request.msg_type,
+        status="sent"
+    )
+    db.add(new_message)
+    db.commit()
+    db.refresh(new_message)
+
+    try:
+        from socketio_server import emit_to_user
+        payload = {
+            "id": new_message.id,
+            "conversation_id": new_message.conversation_id,
+            "sender_id": new_message.sender_id,
+            "sender_name": current_user.display_name,
+            "sender_avatar": current_user.avatar_url,
+            "content": new_message.content,
+            "msg_type": new_message.msg_type,
+            "status": new_message.status,
+            "created_at": new_message.created_at.isoformat(),
+        }
+        for p in participants:
+            await emit_to_user(p.user_id, "message_new", payload)
+    except Exception as e:
+        print("Socket notification error:", e)
+
+    return new_message
+
 
 @router.post("/{conversation_id}/delete")
 def delete_conversation(

@@ -143,17 +143,35 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!inputText.trim()) return;
-
-    // Stop typing indicator
-    sendTypingStop(Number(conversationId));
-    if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
-    
-    sendMessage(Number(conversationId), inputText, "text");
-
+    const textToSend = inputText;
     setInputText("");
     setShowEmojiPicker(false);
+
+    // Stop typing indicator
+    if (conversationId && conversationId !== "note-to-self") {
+      sendTypingStop(Number(conversationId));
+    }
+    if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+    
+    try {
+      const newMsg = await fetchApi(`/conversations/${conversationId}/messages`, {
+        method: "POST",
+        body: JSON.stringify({ content: textToSend, msg_type: "text" }),
+      });
+      if (newMsg && newMsg.id) {
+        setMessages((prev) => {
+          if (prev.some((m) => m.id === newMsg.id)) return prev;
+          return [...prev, newMsg];
+        });
+      }
+    } catch (err) {
+      console.warn("REST send error, attempting socket send fallback:", err);
+      if (conversationId && conversationId !== "note-to-self") {
+        sendMessage(Number(conversationId), textToSend, "text");
+      }
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
