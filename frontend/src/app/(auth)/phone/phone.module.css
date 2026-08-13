@@ -1,0 +1,95 @@
+.card {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.signalIcon {
+  width: 24px;
+  height: 24px;
+  border: 3px solid white;
+  border-radius: 50%;
+  position: relative;
+}
+.signalIcon::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--signal-text-primary);
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--signal-text-secondary);
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.inputGroup {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--signal-border);
+  background-color: var(--signal-bg-secondary);
+  color: var(--signal-text-primary);
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.input:focus {
+  border-color: var(--signal-accent);
+  background-color: var(--signal-bg-primary);
+  box-shadow: 0 0 0 2px rgba(58, 118, 240, 0.2);
+}
+
+.primaryButton {
+  width: 100%;
+  padding: 14px;
+  background-color: var(--signal-accent);
+  color: white;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.primaryButton:hover:not(:disabled) {
+  background-color: #2b61d3;
+}
+
+.primaryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

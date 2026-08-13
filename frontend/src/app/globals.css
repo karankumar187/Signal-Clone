@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --signal-rail-bg: #181818;
+  --signal-sidebar-bg: #1e1e1e;
+  --signal-chat-bg: #181818;
+  --signal-hover-bg: #2a2a2a;
+  --signal-selected-bg: #2c2c2c;
+  --signal-card-bg: #222222;
+  --signal-border: #2c2c2c;
+  
+  --signal-accent: #3a76f0;
+  --signal-blue-bubble: #2563eb;
+  --signal-green: #3c9852;
+  --signal-received-bubble: #2c2c2c;
+  
+  --signal-input-bg: #282828;
+  --signal-text-primary: #ffffff;
+  --signal-text-secondary: #9e9e9e;
+  --signal-icon: #a0a0a0;
+  --signal-icon-active: #ffffff;
+}
+
+[data-theme="light"] {
+  --signal-rail-bg: #e6e6e6;
+  --signal-sidebar-bg: #f2f2f2;
+  --signal-chat-bg: #ffffff;
+  --signal-hover-bg: #eaeaea;
+  --signal-selected-bg: #e2e2e2;
+  --signal-card-bg: #f8f8f8;
+  --signal-border: #e0e0e0;
+  
+  --signal-accent: #2563eb;
+  --signal-blue-bubble: #2563eb;
+  --signal-green: #3c9852;
+  --signal-received-bubble: #e8e8e8;
+  
+  --signal-input-bg: #eaeaea;
+  --signal-text-primary: #000000;
+  --signal-text-secondary: #666666;
+  --signal-icon: #666666;
+  --signal-icon-active: #000000;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background-color: var(--signal-chat-bg);
+  color: var(--signal-text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+}
+
+input, textarea {
+  font-family: inherit;
+  outline: none;
+  border: none;
+}
+
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--signal-chat-bg);
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--signal-chat-bg);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes typingBounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(160, 160, 160, 0.2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(160, 160, 160, 0.4);
+}

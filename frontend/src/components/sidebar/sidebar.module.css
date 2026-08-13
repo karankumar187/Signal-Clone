@@ -1,0 +1,238 @@
+.sidebar {
+  display: flex;
+  width: 360px;
+  height: 100vh;
+  background-color: var(--signal-sidebar-bg);
+  border-right: 1px solid var(--signal-border);
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100vw;
+  }
+  .hiddenOnMobile {
+    display: none !important;
+  }
+}
+
+.iconNav {
+  width: 56px;
+  height: 100%;
+  background-color: var(--signal-rail-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-right: 1px solid var(--signal-border);
+}
+
+.navSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.navIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--signal-icon);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.navIcon:hover {
+  color: var(--signal-text-primary);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.navIcon.active {
+  background-color: var(--signal-hover-bg);
+  color: var(--signal-icon-active);
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--signal-sidebar-bg);
+}
+
+.header {
+  padding: 16px 16px 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.headerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--signal-text-primary);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.actionBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--signal-icon);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.actionBtn:hover {
+  background-color: var(--signal-hover-bg);
+  color: var(--signal-text-primary);
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  background-color: var(--signal-input-bg);
+  border-radius: 8px;
+  padding: 8px 12px;
+  gap: 10px;
+}
+
+.searchInput {
+  width: 100%;
+  background: transparent;
+  color: var(--signal-text-primary);
+  font-size: 14px;
+}
+
+.searchInput::placeholder {
+  color: var(--signal-text-secondary);
+}
+
+.list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  gap: 12px;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: background 0.15s;
+}
+
+.item:hover {
+  background-color: var(--signal-hover-bg);
+}
+
+.item.selected {
+  background-color: var(--signal-selected-bg);
+}
+
+.itemAvatarContainer {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.itemAvatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatarFallback {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: #e5989b;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.itemDetails {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.itemName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--signal-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemTime {
+  font-size: 12px;
+  color: var(--signal-text-secondary);
+}
+
+.itemBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.itemMessage {
+  font-size: 13px;
+  color: var(--signal-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badge {
+  background-color: var(--signal-accent);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 2px 6px;
+  min-width: 18px;
+  text-align: center;
+}
