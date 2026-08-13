@@ -6,6 +6,7 @@ from auth_utils import get_current_user
 
 router = APIRouter()
 
+@router.post("", response_model=schemas.ConversationResponse)
 @router.post("/", response_model=schemas.ConversationResponse)
 def create_group(
     request: schemas.CreateGroupRequest,
@@ -38,16 +39,18 @@ def create_group(
             db.add(p)
             
     db.commit()
-    db.refresh(new_group)
+    
+    # Reload the entire conversation to ensure relationships (participants, user) are fully loaded for Pydantic
+    reloaded_group = db.query(models.Conversation).filter(models.Conversation.id == new_group.id).first()
     
     return {
-        "id": new_group.id,
-        "is_group": new_group.is_group,
-        "group_name": new_group.group_name,
-        "group_avatar": new_group.group_avatar,
-        "created_at": new_group.created_at,
-        "created_by": new_group.created_by,
-        "participants": new_group.participants,
+        "id": reloaded_group.id,
+        "is_group": reloaded_group.is_group,
+        "group_name": reloaded_group.group_name,
+        "group_avatar": reloaded_group.group_avatar,
+        "created_at": reloaded_group.created_at,
+        "created_by": reloaded_group.created_by,
+        "participants": reloaded_group.participants,
         "last_message": None,
         "unread_count": 0
     }

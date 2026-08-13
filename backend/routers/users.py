@@ -9,18 +9,18 @@ router = APIRouter()
 
 @router.get("/search", response_model=List[schemas.UserBase])
 def search_users(
-    q: str,
+    q: str = "",
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    if not q or len(q) < 3:
-        return []
+    query = db.query(models.User).filter(models.User.id != current_user.id)
     
-    users = db.query(models.User).filter(
-        (models.User.phone.contains(q)) | (models.User.display_name.ilike(f"%{q}%")),
-        models.User.id != current_user.id
-    ).limit(20).all()
-    
+    if q and len(q) >= 2:
+        query = query.filter(
+            (models.User.phone.contains(q)) | (models.User.display_name.ilike(f"%{q}%"))
+        )
+        
+    users = query.limit(50).all()
     return users
 
 @router.get("/{user_id}", response_model=schemas.UserBase)
