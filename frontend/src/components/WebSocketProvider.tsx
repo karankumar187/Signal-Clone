@@ -68,12 +68,15 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     const socket = io(apiUrl, {
       path: "/socket.io",
       transports: ["websocket", "polling"],
+      // Pass token in auth dict AND as a query param for Render proxy compatibility
       auth: { token },
+      query: { token },
       reconnection: true,
-      reconnectionAttempts: Infinity,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 2000,
+      reconnectionDelayMax: 10000,
     });
+
 
     socketRef.current = socket;
 

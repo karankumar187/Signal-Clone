@@ -220,41 +220,54 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewChat, onOpenNewGroup 
 
         <div className={styles.list}>
           {/* Note to Self Pinned */}
-          <div
-            className={`${styles.item} ${activeId === noteToSelfId ? styles.selected : ""}`}
-            onClick={async () => {
-              if (noteToSelfId) {
-                router.push(`/chats/${noteToSelfId}`);
-              } else {
-                try {
-                  const nts = await fetchApi("/conversations/note-to-self", { method: "POST" });
-                  if (nts && nts.id) {
-                    setNoteToSelfId(String(nts.id));
-                    router.push(`/chats/${nts.id}`);
+          {(() => {
+            const ntsConv = conversations.find((c) => String(c.id) === noteToSelfId);
+            return (
+              <div
+                className={`${styles.item} ${activeId === noteToSelfId ? styles.selected : ""}`}
+                onClick={async () => {
+                  if (noteToSelfId) {
+                    router.push(`/chats/${noteToSelfId}`);
+                  } else {
+                    try {
+                      const nts = await fetchApi("/conversations/note-to-self", { method: "POST" });
+                      if (nts && nts.id) {
+                        setNoteToSelfId(String(nts.id));
+                        router.push(`/chats/${nts.id}`);
+                      }
+                    } catch (e) {
+                      console.error("Failed to fetch Note to Self:", e);
+                    }
                   }
-                } catch (e) {
-                  console.error("Failed to fetch Note to Self:", e);
-                }
-              }
-            }}
-          >
-            <div className={styles.itemAvatarContainer}>
-              <NoteToSelfIcon size={42} />
-            </div>
-            <div className={styles.itemDetails}>
-              <div className={styles.itemTop}>
-                <div className={styles.nameRow}>
-                  <span className={styles.itemName}>Note to Self</span>
-                  <VerifiedCheckIcon size={14} color="#3a76f0" />
+                }}
+              >
+                <div className={styles.itemAvatarContainer}>
+                  <NoteToSelfIcon size={42} />
                 </div>
-                <span className={styles.itemTime}>16:30</span>
+                <div className={styles.itemDetails}>
+                  <div className={styles.itemTop}>
+                    <div className={styles.nameRow}>
+                      <span className={styles.itemName}>Note to Self</span>
+                      <VerifiedCheckIcon size={14} color="#3a76f0" />
+                    </div>
+                    <span className={styles.itemTime} suppressHydrationWarning>
+                      {ntsConv?.last_message
+                        ? new Date(ntsConv.last_message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
+                        : ""}
+                    </span>
+                  </div>
+                  <div className={styles.itemBottom}>
+                    <span className={styles.itemMessage}>
+                      {ntsConv?.last_message ? ntsConv.last_message.content : ""}
+                    </span>
+                    {ntsConv?.last_message
+                      ? <MessageStatusIcon status={ntsConv.last_message.status || "sent"} size={13} color="var(--signal-text-secondary)" />
+                      : null}
+                  </div>
+                </div>
               </div>
-              <div className={styles.itemBottom}>
-                <span className={styles.itemMessage}>hii</span>
-                <MessageStatusIcon status="read" size={13} color="var(--signal-text-secondary)" />
-              </div>
-            </div>
-          </div>
+            );
+          })()}
 
           {filteredConversations
             .filter((c) => String(c.id) !== noteToSelfId)

@@ -294,7 +294,8 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
         flex: 1,
         display: "flex",
         flexDirection: "column",
-        height: "100vh",
+        height: "100%",
+        maxHeight: "100vh",
         width: "100%",
         backgroundColor: "#181818",
         position: "relative",
@@ -506,12 +507,14 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
         style={{
           flex: 1,
           overflowY: "auto",
-          padding: "20px 40px",
+          overflowX: "hidden",
+          padding: "20px 40px 24px 40px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           width: "100%",
           boxSizing: "border-box",
+          minHeight: 0,
         }}
       >
         {isNoteToSelf ? (
@@ -761,14 +764,14 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
               <span style={{ fontSize: "11px", color: "#666" }}>{typingName} is typing…</span>
             </div>
           )}
-          <div ref={messagesEndRef} />
+          <div ref={messagesEndRef} style={{ height: "1px", flexShrink: 0 }} />
         </div>
       </div>
 
       {/* Bottom Message Input Bar Wrapper */}
       <div
         style={{
-          padding: "8px 24px 16px 24px",
+          padding: "8px 16px 12px 16px",
           display: "flex",
           flexDirection: "column",
           alignItems: "stretch",
@@ -776,6 +779,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
           boxSizing: "border-box",
           flexShrink: 0,
           position: "relative",
+          borderTop: "1px solid #232323",
         }}
         onClick={(e) => e.stopPropagation()}
       >

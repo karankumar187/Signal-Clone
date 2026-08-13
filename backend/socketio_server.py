@@ -52,10 +52,12 @@ async def emit_to_user(user_id: int, event: str, data: dict):
 @sio.event
 async def connect(sid, environ, auth):
     token = None
-    # auth dict comes from socket.io-client auth option
+
+    # 1) auth dict from socket.io-client { auth: { token } }
     if isinstance(auth, dict):
-        token = auth.get("token")
-    # Fallback: query string
+        token = auth.get("token") or auth.get("Authorization") or auth.get("authorization")
+
+    # 2) Fallback: query string ?token=...
     if not token:
         query = environ.get("QUERY_STRING", "")
         for part in query.split("&"):
@@ -63,16 +65,26 @@ async def connect(sid, environ, auth):
                 token = part[6:]
                 break
 
+    # 3) Fallback: HTTP Authorization header
     if not token:
-        await sio.disconnect(sid)
-        return False
+        auth_header = environ.get("HTTP_AUTHORIZATION", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header[7:]
+
+    # Strip "Bearer " prefix if present (in case client sends full header value)
+    if token and token.startswith("Bearer "):
+        token = token[7:]
+
+    if not token:
+        # Raise ConnectionRefusedError — the correct way to reject in python-socketio
+        # (avoids the 403 retry loop that `return False` causes)
+        raise ConnectionRefusedError("authentication required")
 
     db = SessionLocal()
     try:
         user = get_user_from_token(token, db)
         if not user:
-            await sio.disconnect(sid)
-            return False
+            raise ConnectionRefusedError("invalid token")
 
         sid_to_user[sid] = user.id
         if user.id not in user_to_sids:
