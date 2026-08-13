@@ -31,6 +31,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewChat, onOpenNewGroup }) => {
   const [conversations, setConversations] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
+  const [noteToSelfId, setNoteToSelfId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("chats");
   const [navCollapsed, setNavCollapsed] = useState(false);
@@ -42,8 +43,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewChat, onOpenNewGroup 
 
   const loadData = async () => {
     try {
-      const userData = await fetchApi("/auth/me");
-      setUser(userData);
+      const u = await fetchApi("/auth/me");
+      setUser(u);
+      
+      // Fetch or create note-to-self conversation for this user
+      const nts = await fetchApi("/conversations/note-to-self", { method: "POST" });
+      setNoteToSelfId(String(nts.id));
+
       const convs = await fetchApi("/conversations/");
       setConversations(convs);
     } catch (err) {
@@ -166,15 +172,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewChat, onOpenNewGroup 
         <div className={styles.header}>
           <div className={styles.headerTop}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              {/* Hamburger in header — only shown when rail is collapsed */}
+              {/* Hamburger and Settings in header — only shown when rail is collapsed */}
               {navCollapsed && (
-                <button
-                  className={styles.actionBtn}
-                  title="Expand menu"
-                  onClick={() => setNavCollapsed(false)}
-                >
-                  <HamburgerIcon size={20} />
-                </button>
+                <>
+                  <button
+                    className={styles.actionBtn}
+                    title="Expand menu"
+                    onClick={() => setNavCollapsed(false)}
+                  >
+                    <HamburgerIcon size={20} />
+                  </button>
+                  <button
+                    className={`${styles.actionBtn} ${styles.mobileSettingsBtn}`}
+                    title="Settings"
+                    onClick={() => { setActiveTab("settings"); router.push("/settings"); }}
+                  >
+                    <SettingsIcon size={20} />
+                  </button>
+                </>
               )}
               <h2 className={styles.title}>Chats</h2>
             </div>
@@ -203,8 +218,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewChat, onOpenNewGroup 
         <div className={styles.list}>
           {/* Note to Self Pinned */}
           <div
-            className={`${styles.item} ${activeId === "note-to-self" ? styles.selected : ""}`}
-            onClick={() => router.push("/chats/note-to-self")}
+            className={`${styles.item} ${activeId === noteToSelfId ? styles.selected : ""}`}
+            onClick={() => noteToSelfId && router.push(`/chats/${noteToSelfId}`)}
           >
             <div className={styles.itemAvatarContainer}>
               <NoteToSelfIcon size={42} />
@@ -224,7 +239,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewChat, onOpenNewGroup 
             </div>
           </div>
 
-          {filteredConversations.map((c) => {
+          {filteredConversations
+            .filter((c) => String(c.id) !== noteToSelfId)
+            .map((c) => {
             const isGroup = c.is_group;
             const otherParticipant = c.participants.find((p: any) => p.user_id !== user?.id)?.user;
             const name = isGroup ? c.group_name : otherParticipant?.display_name || "Contact";

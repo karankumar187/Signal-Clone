@@ -13,6 +13,7 @@ import {
   MicIcon,
   PlusIcon,
   ChevronUpIcon,
+  SendIcon,
   DoubleCheckIcon,
   ImageIcon,
   FileIcon,
@@ -44,17 +45,12 @@ interface ChatPaneProps {
 }
 
 export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
-  const isNoteToSelf = conversationId === "note-to-self";
-
-  const [messages, setMessages] = useState<any[]>(
-    // Default only shown for Note to Self before real data loads
-    isNoteToSelf
-      ? [{ id: "init-1", content: "hii", msg_type: "text", created_at: new Date().toISOString(), isSent: true, status: "read" }]
-      : []
-  );
+  const [messages, setMessages] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
   const [inputText, setInputText] = useState("");
   const [conversation, setConversation] = useState<any>(null);
+
+  const isNoteToSelf = conversation && !conversation.is_group && conversation.participants?.length === 1;
   const [uploadingImage, setUploadingImage] = useState(false);
   const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -80,15 +76,13 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
       const u = await fetchApi("/auth/me");
       setUser(u);
 
-      if (!isNoteToSelf) {
-        const msgs = await fetchApi(`/conversations/${conversationId}/messages`);
-        setMessages(msgs);
+      const msgs = await fetchApi(`/conversations/${conversationId}/messages`);
+      setMessages(msgs);
 
-        const convs = await fetchApi("/conversations/");
-        const currentConv = convs.find((c: any) => String(c.id) === conversationId);
-        setConversation(currentConv);
-        setAllConversations(convs);
-      }
+      const convs = await fetchApi("/conversations/");
+      const currentConv = convs.find((c: any) => String(c.id) === conversationId);
+      setConversation(currentConv);
+      setAllConversations(convs);
     } catch (err) {
       console.error(err);
     }
@@ -100,7 +94,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
   }, [conversationId]);
 
   useEffect(() => {
-    if (lastEvent && !isNoteToSelf) {
+    if (lastEvent) {
       if (lastEvent.type === "message_new" && String(lastEvent.payload.conversation_id) === conversationId) {
         setMessages((prev) => {
           // Avoid duplicates
@@ -128,7 +122,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
         );
       }
     }
-  }, [lastEvent, conversationId, isNoteToSelf]);
+  }, [lastEvent, conversationId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -138,50 +132,38 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
     if (!inputText.trim()) return;
 
     // Stop typing indicator
-    if (!isNoteToSelf) {
-      sendTypingStop(Number(conversationId));
-      if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
-    }
+    sendTypingStop(Number(conversationId));
+    if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
     
-    if (isNoteToSelf) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now(),
-          content: inputText,
-          msg_type: "text",
-          created_at: new Date().toISOString(),
-          isSent: true,
-          status: "read",
-        },
-      ]);
-    } else {
-      sendMessage(Number(conversationId), inputText, "text");
-    }
+    sendMessage(Number(conversationId), inputText, "text");
 
     setInputText("");
     setShowEmojiPicker(false);
   };
 
-  // Debounce typing events: emit typing.start on first keypress, stop after 1.5 s idle
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-      const val = e.target.value;
-      setInputText(val);
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    const val = e.target.value;
+    setInputText(val);
 
-      if (!isNoteToSelf && val.trim().length > 0) {
-        sendTypingStart(Number(conversationId));
-        if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
-        typingTimerRef.current = setTimeout(() => {
-          sendTypingStop(Number(conversationId));
-        }, 1500);
-      } else if (!isNoteToSelf && val.trim().length === 0) {
+    if (val.trim().length > 0) {
+      if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+      sendTypingStart(Number(conversationId));
+
+      typingTimerRef.current = setTimeout(() => {
         sendTypingStop(Number(conversationId));
-        if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
-      }
-    },
-    [isNoteToSelf, conversationId, sendTypingStart, sendTypingStop]
-  );
+      }, 3000);
+    } else if (val.trim().length === 0) {
+      sendTypingStop(Number(conversationId));
+      if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+      sendTypingStop(Number(conversationId));
+    };
+  }, [conversationId, sendTypingStart, sendTypingStop]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -945,22 +927,22 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
             onChange={handleImageUpload}
           />
 
-          {/* Plus / Attachment Button on Far Right */}
+          {/* Plus / Attachment Button or Send Button on Far Right */}
           <button
             style={{
               width: "36px",
               height: "36px",
               borderRadius: "50%",
-              backgroundColor: "#282828",
-              color: "#a0a0a0",
+              backgroundColor: isTypingText ? "#3a76f0" : "#282828",
+              color: isTypingText ? "#ffffff" : "#a0a0a0",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               flexShrink: 0,
               cursor: "pointer",
               border: "none",
-              transform: showAttachmentMenu ? "rotate(45deg)" : "none",
-              transition: "transform 0.15s",
+              transform: showAttachmentMenu && !isTypingText ? "rotate(45deg)" : "none",
+              transition: "transform 0.15s, background-color 0.15s",
             }}
             onClick={() => {
               if (isTypingText) {
@@ -972,7 +954,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
             }}
             title={isTypingText ? "Send message" : "Add Attachment"}
           >
-            <PlusIcon size={20} />
+            {isTypingText ? <SendIcon size={18} /> : <PlusIcon size={20} />}
           </button>
         </div>
       </div>
