@@ -177,30 +177,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewChat, onOpenNewGroup 
         <div className={styles.header}>
           <div className={styles.headerTop}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              {/* Hamburger and Settings in header — only shown when rail is collapsed */}
+              {/* Hamburger in header — only shown when rail is collapsed */}
               {navCollapsed && (
-                <>
-                  <button
-                    className={styles.actionBtn}
-                    title="Expand menu"
-                    onClick={() => setNavCollapsed(false)}
-                  >
-                    <HamburgerIcon size={20} />
-                  </button>
-                  <button
-                    className={`${styles.actionBtn} ${styles.mobileSettingsBtn}`}
-                    title="Settings"
-                    onClick={() => { setActiveTab("settings"); router.push("/settings"); }}
-                  >
-                    <SettingsIcon size={20} />
-                  </button>
-                </>
+                <button
+                  className={styles.actionBtn}
+                  title="Expand menu"
+                  onClick={() => setNavCollapsed(false)}
+                >
+                  <HamburgerIcon size={20} />
+                </button>
               )}
               <h2 className={styles.title}>Chats</h2>
             </div>
             <div className={styles.actions}>
               <button className={styles.actionBtn} onClick={onOpenNewChat} title="New Chat">
                 <EditIcon size={18} />
+              </button>
+              <button 
+                className={`${styles.actionBtn} ${styles.mobileSettingsBtn}`} 
+                onClick={() => { setActiveTab("settings"); router.push("/settings"); }} 
+                title="Settings"
+              >
+                <SettingsIcon size={18} />
               </button>
               <button className={styles.actionBtn} onClick={onOpenNewGroup} title="More Options">
                 <MoreDotsIcon size={18} />

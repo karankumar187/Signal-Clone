@@ -12,6 +12,15 @@ import os
 # Create DB tables
 models.Base.metadata.create_all(bind=engine)
 
+# Run migrations for columns added after initial deploy (safe to re-run)
+from sqlalchemy import text, inspect as sa_inspect
+with engine.connect() as _conn:
+    existing_cols = [c["name"] for c in sa_inspect(engine).get_columns("users")]
+    if "note_to_self_conv_id" not in existing_cols:
+        _conn.execute(text("ALTER TABLE users ADD COLUMN note_to_self_conv_id INTEGER REFERENCES conversations(id)"))
+        _conn.commit()
+
+
 app = FastAPI(title="Signal Clone API")
 
 # Configure CORS

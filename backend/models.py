@@ -13,6 +13,7 @@ class User(Base):
     avatar_url = Column(String, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     last_seen = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    note_to_self_conv_id = Column(Integer, ForeignKey("conversations.id"), nullable=True)
 
     participants = relationship("Participant", back_populates="user")
     messages = relationship("Message", back_populates="sender")

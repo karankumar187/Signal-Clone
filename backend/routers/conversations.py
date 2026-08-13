@@ -120,45 +120,43 @@ def get_or_create_note_to_self(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    from sqlalchemy import func
-    my_convs = db.query(models.Participant.conversation_id)\
-        .filter(models.Participant.user_id == current_user.id).subquery()
-        
-    conv_id_with_1_part = db.query(models.Participant.conversation_id)\
-        .filter(models.Participant.conversation_id.in_(my_convs))\
-        .group_by(models.Participant.conversation_id)\
-        .having(func.count(models.Participant.id) == 1)\
-        .first()
-        
-    if conv_id_with_1_part:
-        existing_conv = db.query(models.Conversation).filter(models.Conversation.id == conv_id_with_1_part[0]).first()
-        if existing_conv and not existing_conv.is_group:
+    # If this user already has a pinned NTS conversation, return it directly
+    if current_user.note_to_self_conv_id:
+        existing = db.query(models.Conversation).filter(
+            models.Conversation.id == current_user.note_to_self_conv_id
+        ).first()
+        if existing:
             return {
-                "id": existing_conv.id,
-                "is_group": existing_conv.is_group,
-                "created_at": existing_conv.created_at,
-                "participants": existing_conv.participants,
+                "id": existing.id,
+                "is_group": existing.is_group,
+                "created_at": existing.created_at,
+                "participants": existing.participants,
                 "last_message": None,
-                "unread_count": 0
+                "unread_count": 0,
             }
-            
-    # Create new Note to Self
-    new_conv = models.Conversation(is_group=False)
+
+    # Create a new solo conversation (only this user is a participant)
+    new_conv = models.Conversation(is_group=False, group_name="Note to Self")
     db.add(new_conv)
     db.commit()
     db.refresh(new_conv)
-    
+
     p = models.Participant(conversation_id=new_conv.id, user_id=current_user.id, is_admin=True)
     db.add(p)
+
+    # Pin it on the user row so it's always found instantly
+    current_user.note_to_self_conv_id = new_conv.id
+    db.add(current_user)
     db.commit()
-    
+    db.refresh(new_conv)
+
     return {
         "id": new_conv.id,
         "is_group": new_conv.is_group,
         "created_at": new_conv.created_at,
         "participants": new_conv.participants,
         "last_message": None,
-        "unread_count": 0
+        "unread_count": 0,
     }
 
 @router.get("/{conversation_id}/messages", response_model=List[schemas.MessageResponse])

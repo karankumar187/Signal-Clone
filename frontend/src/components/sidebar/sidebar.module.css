@@ -17,6 +17,9 @@
   .mobileSettingsBtn {
     display: flex !important;
   }
+  .iconNav {
+    display: none !important;
+  }
 }
 
 .mobileSettingsBtn {
