@@ -76,15 +76,30 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
       const u = await fetchApi("/auth/me");
       setUser(u);
 
-      const msgs = await fetchApi(`/conversations/${conversationId}/messages`);
-      setMessages(msgs);
+      let targetId = conversationId;
+      if (conversationId === "note-to-self") {
+        try {
+          const nts = await fetchApi("/conversations/note-to-self", { method: "POST" });
+          if (nts && nts.id) {
+            router.replace(`/chats/${nts.id}`);
+            return;
+          }
+        } catch (ntsErr) {
+          console.warn("Failed to resolve note to self conversation:", ntsErr);
+        }
+      }
 
-      const convs = await fetchApi("/conversations/");
-      const currentConv = convs.find((c: any) => String(c.id) === conversationId);
-      setConversation(currentConv);
-      setAllConversations(convs);
+      if (targetId && targetId !== "note-to-self") {
+        const msgs = await fetchApi(`/conversations/${targetId}/messages`);
+        setMessages(msgs);
+
+        const convs = await fetchApi("/conversations/");
+        const currentConv = convs.find((c: any) => String(c.id) === targetId);
+        setConversation(currentConv);
+        setAllConversations(convs);
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Error loading chat pane data:", err);
     }
   };
 

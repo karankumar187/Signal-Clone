@@ -45,15 +45,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewChat, onOpenNewGroup 
     try {
       const u = await fetchApi("/auth/me");
       setUser(u);
-      
-      // Fetch or create note-to-self conversation for this user
-      const nts = await fetchApi("/conversations/note-to-self", { method: "POST" });
-      setNoteToSelfId(String(nts.id));
 
       const convs = await fetchApi("/conversations/");
       setConversations(convs);
+
+      try {
+        const nts = await fetchApi("/conversations/note-to-self", { method: "POST" });
+        if (nts && nts.id) {
+          setNoteToSelfId(String(nts.id));
+        }
+      } catch (ntsErr) {
+        console.warn("Note to self fetch error:", ntsErr);
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Error loading sidebar data:", err);
     }
   };
 
@@ -219,7 +224,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewChat, onOpenNewGroup 
           {/* Note to Self Pinned */}
           <div
             className={`${styles.item} ${activeId === noteToSelfId ? styles.selected : ""}`}
-            onClick={() => noteToSelfId && router.push(`/chats/${noteToSelfId}`)}
+            onClick={async () => {
+              if (noteToSelfId) {
+                router.push(`/chats/${noteToSelfId}`);
+              } else {
+                try {
+                  const nts = await fetchApi("/conversations/note-to-self", { method: "POST" });
+                  if (nts && nts.id) {
+                    setNoteToSelfId(String(nts.id));
+                    router.push(`/chats/${nts.id}`);
+                  }
+                } catch (e) {
+                  console.error("Failed to fetch Note to Self:", e);
+                }
+              }
+            }}
           >
             <div className={styles.itemAvatarContainer}>
               <NoteToSelfIcon size={42} />
