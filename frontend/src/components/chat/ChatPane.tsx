@@ -764,6 +764,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
               <span style={{ fontSize: "11px", color: "#666" }}>{typingName} is typing…</span>
             </div>
           )}
+          <div style={{ height: "40px", flexShrink: 0 }} />
           <div ref={messagesEndRef} style={{ height: "1px", flexShrink: 0 }} />
         </div>
       </div>
@@ -779,7 +780,6 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
           boxSizing: "border-box",
           flexShrink: 0,
           position: "relative",
-          borderTop: "1px solid var(--signal-border)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
