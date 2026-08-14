@@ -18,12 +18,23 @@
   border-bottom: 1px solid var(--signal-border);
   background-color: var(--signal-chat-bg);
   flex-shrink: 0;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0 10px;
+    gap: 8px;
+  }
 }
 
 .headerLeft {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
 }
 
 .backBtn {
@@ -34,6 +45,7 @@
   border: none;
   padding: 4px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
@@ -41,7 +53,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 4px;
+    margin-right: 2px;
   }
 }
 
@@ -50,34 +62,44 @@
   height: 36px;
   border-radius: 50%;
   object-fit: cover;
+  flex-shrink: 0;
 }
 
 .headerInfo {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .nameRow {
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
 }
 
 .headerName {
   font-size: 15px;
   font-weight: 600;
   color: var(--signal-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .headerSubtitle {
   font-size: 12px;
   color: var(--signal-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .headerRight {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .iconBtn {
@@ -342,7 +364,15 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
   z-index: 100;
   width: 180px;
+  max-width: calc(100vw - 24px);
   animation: fadeIn 0.15s ease-out;
+}
+
+@media (max-width: 768px) {
+  .attachmentMenu {
+    right: 12px;
+    bottom: 58px;
+  }
 }
 
 .menuItem {
@@ -378,7 +408,19 @@
   z-index: 100;
   font-size: 20px;
   width: 260px;
+  max-width: calc(100vw - 24px);
   animation: fadeIn 0.15s ease-out;
+}
+
+@media (max-width: 768px) {
+  .emojiPicker {
+    left: 12px;
+    bottom: 58px;
+    width: min(280px, calc(100vw - 24px));
+    padding: 10px;
+    gap: 8px;
+    font-size: 18px;
+  }
 }
 
 .emojiItem {

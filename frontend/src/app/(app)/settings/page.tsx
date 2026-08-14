@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { fetchApi } from "@/lib/api";
-import { LockIcon, BellIcon, DevicesIcon, PhoneIcon, CameraIcon } from "@/components/icons/Icons";
+import { LockIcon, BellIcon, DevicesIcon, PhoneIcon, CameraIcon, ArrowLeftIcon } from "@/components/icons/Icons";
 import styles from "./settings.module.css";
 
 export default function SettingsPage() {
+  const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [displayName, setDisplayName] = useState("");
   const [about, setAbout] = useState("");
@@ -89,7 +91,12 @@ export default function SettingsPage() {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <h2 className={styles.title}>Settings</h2>
+        <div className={styles.headerRow}>
+          <button className={styles.mobileBackBtn} onClick={() => router.push("/chats")}>
+            <ArrowLeftIcon size={20} />
+          </button>
+          <h2 className={styles.title}>Settings</h2>
+        </div>
 
         {/* Profile Section */}
         <div className={styles.section}>
