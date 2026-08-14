@@ -271,60 +271,83 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewChat, onOpenNewGroup 
             );
           })()}
 
-          {filteredConversations
-            .filter((c) => String(c.id) !== noteToSelfId)
-            .map((c) => {
-            const isGroup = c.is_group;
-            const otherParticipant = c.participants.find((p: any) => p.user_id !== user?.id)?.user;
-            const name = isGroup ? c.group_name : otherParticipant?.display_name || "Contact";
-            const rawAvatar = isGroup
-              ? c.group_avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${name}`
-              : otherParticipant?.avatar_url;
-            // Add cache-buster so updated profile pics show immediately
-            const avatar = rawAvatar && rawAvatar.startsWith("http://localhost")
-              ? `${rawAvatar}?t=${Math.floor(Date.now() / 30000)}`
-              : rawAvatar;
-            const isSelected = activeId === String(c.id);
-            const initial = name.charAt(0).toUpperCase();
-
-            return (
-              <div
-                key={c.id}
-                className={`${styles.item} ${isSelected ? styles.selected : ""}`}
-                onClick={() => router.push(`/chats/${c.id}`)}
-              >
-                <div className={styles.itemAvatarContainer}>
-                  {avatar ? (
-                    <img src={avatar} alt={name} className={styles.itemAvatar} />
-                  ) : (
-                    <div className={styles.avatarFallback}>{initial}</div>
-                  )}
-                </div>
-                <div className={styles.itemDetails}>
-                  <div className={styles.itemTop}>
-                    <div className={styles.nameRow}>
-                      <span className={styles.itemName}>{name}</span>
-                    </div>
-                    <span className={styles.itemTime} suppressHydrationWarning>
-                      {c.last_message
-                        ? new Date(c.last_message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-                        : "15m"}
-                    </span>
-                  </div>
-                  <div className={styles.itemBottom}>
-                    <span className={styles.itemMessage}>
-                      {c.last_message ? c.last_message.content : ""}
-                    </span>
-                    {c.unread_count > 0 ? (
-                      <span className={styles.badge}>{c.unread_count}</span>
-                    ) : c.last_message && c.last_message.sender_id === user?.id ? (
-                      <MessageStatusIcon status={c.last_message.status || "sent"} size={13} color="var(--signal-text-secondary)" />
-                    ) : null}
-                  </div>
-                </div>
+          {filteredConversations.filter((c) => String(c.id) !== noteToSelfId).length === 0 ? (
+            <div style={{ padding: "24px 16px", textAlign: "center", color: "var(--signal-text-secondary)" }}>
+              <div style={{ fontSize: "13px", fontWeight: 500, marginBottom: "12px" }}>
+                {searchQuery.trim() ? "No chats found" : "No recent chats yet"}
               </div>
-            );
-          })}
+              <button
+                onClick={onOpenNewChat}
+                style={{
+                  backgroundColor: "var(--signal-accent)",
+                  color: "#ffffff",
+                  border: "none",
+                  padding: "8px 16px",
+                  borderRadius: "20px",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                Start a new chat
+              </button>
+            </div>
+          ) : (
+            filteredConversations
+              .filter((c) => String(c.id) !== noteToSelfId)
+              .map((c) => {
+              const isGroup = c.is_group;
+              const otherParticipant = c.participants.find((p: any) => p.user_id !== user?.id)?.user;
+              const name = isGroup ? c.group_name : otherParticipant?.display_name || "Contact";
+              const rawAvatar = isGroup
+                ? c.group_avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${name}`
+                : otherParticipant?.avatar_url;
+              // Add cache-buster so updated profile pics show immediately
+              const avatar = rawAvatar && rawAvatar.startsWith("http://localhost")
+                ? `${rawAvatar}?t=${Math.floor(Date.now() / 30000)}`
+                : rawAvatar;
+              const isSelected = activeId === String(c.id);
+              const initial = name.charAt(0).toUpperCase();
+
+              return (
+                <div
+                  key={c.id}
+                  className={`${styles.item} ${isSelected ? styles.selected : ""}`}
+                  onClick={() => router.push(`/chats/${c.id}`)}
+                >
+                  <div className={styles.itemAvatarContainer}>
+                    {avatar ? (
+                      <img src={avatar} alt={name} className={styles.itemAvatar} />
+                    ) : (
+                      <div className={styles.avatarFallback}>{initial}</div>
+                    )}
+                  </div>
+                  <div className={styles.itemDetails}>
+                    <div className={styles.itemTop}>
+                      <div className={styles.nameRow}>
+                        <span className={styles.itemName}>{name}</span>
+                      </div>
+                      <span className={styles.itemTime} suppressHydrationWarning>
+                        {c.last_message
+                          ? new Date(c.last_message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                          : "15m"}
+                      </span>
+                    </div>
+                    <div className={styles.itemBottom}>
+                      <span className={styles.itemMessage}>
+                        {c.last_message ? c.last_message.content : ""}
+                      </span>
+                      {c.unread_count > 0 ? (
+                        <span className={styles.badge}>{c.unread_count}</span>
+                      ) : c.last_message && c.last_message.sender_id === user?.id ? (
+                        <MessageStatusIcon status={c.last_message.status || "sent"} size={13} color="var(--signal-text-secondary)" />
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     </aside>

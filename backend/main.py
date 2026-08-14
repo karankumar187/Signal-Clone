@@ -54,8 +54,12 @@ app.include_router(upload.router, prefix="/api/upload", tags=["upload"])
 def read_root():
     return {"message": "Welcome to Signal Clone API"}
 
-# Wrap FastAPI with Socket.io ASGI middleware
-# Socket.io will handle /socket.io/* paths; everything else goes to FastAPI
+# Mount Socket.io directly on FastAPI app so it works regardless of whether
+# Render/production runs `uvicorn main:app` or `uvicorn main:socket_app`
+sio_app = socketio.ASGIApp(sio, socketio_path="")
+app.mount("/socket.io", sio_app)
+
+# Wrap FastAPI with Socket.io ASGI middleware as top-level application wrapper
 socket_app = socketio.ASGIApp(sio, other_asgi_app=app, socketio_path="socket.io")
 
 if __name__ == "__main__":
