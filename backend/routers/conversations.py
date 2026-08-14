@@ -160,7 +160,7 @@ def get_or_create_note_to_self(
     }
 
 @router.get("/{conversation_id}/messages", response_model=List[schemas.MessageResponse])
-def get_messages(
+async def get_messages(
     conversation_id: int,
     limit: int = 50,
     offset: int = 0,
@@ -181,6 +181,7 @@ def get_messages(
     ).order_by(desc(models.Message.created_at)).offset(offset).limit(limit).all()
     
     # Mark messages as read
+    newly_read_messages = []
     unread_messages = [m for m in messages if m.sender_id != current_user.id]
     for msg in unread_messages:
         read_record = db.query(models.MessageRead).filter(
@@ -192,8 +193,22 @@ def get_messages(
             db.add(new_read)
             if msg.status != "read":
                 msg.status = "read"
+                newly_read_messages.append(msg)
     
     db.commit()
+
+    # Emit socket read status update to message senders in real time
+    if newly_read_messages:
+        try:
+            from socketio_server import emit_to_user
+            for msg in newly_read_messages:
+                await emit_to_user(msg.sender_id, "message_status_update", {
+                    "message_id": msg.id,
+                    "conversation_id": msg.conversation_id,
+                    "status": "read",
+                })
+        except Exception as socket_err:
+            print("[Socket] Status update error:", socket_err)
     
     return messages[::-1] # Return in chronological order
 

@@ -67,7 +67,8 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const localTypingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const remoteTypingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { sendMessage, sendTypingStart, sendTypingStop, markRead, lastEvent } = useSocket();
   const router = useRouter();
 
@@ -112,23 +113,20 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
     if (lastEvent) {
       if (lastEvent.type === "message_new" && String(lastEvent.payload.conversation_id) === conversationId) {
         setMessages((prev) => {
-          // Avoid duplicates
           if (prev.some((m) => m.id === lastEvent.payload.id)) return prev;
           return [...prev, lastEvent.payload];
         });
-        // Mark as read if we're the recipient
         if (lastEvent.payload.sender_id !== undefined && lastEvent.payload.sender_id !== user?.id) {
           markRead(lastEvent.payload.id);
         }
       } else if (lastEvent.type === "typing_start" && String(lastEvent.payload.conversation_id) === conversationId) {
         setIsTypingRemote(true);
         setTypingName(lastEvent.payload.user_name || "Contact");
-        // Auto-clear after 3 s in case typing_stop is missed
-        if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
-        typingTimerRef.current = setTimeout(() => setIsTypingRemote(false), 3000);
+        if (remoteTypingTimerRef.current) clearTimeout(remoteTypingTimerRef.current);
+        remoteTypingTimerRef.current = setTimeout(() => setIsTypingRemote(false), 4000);
       } else if (lastEvent.type === "typing_stop" && String(lastEvent.payload.conversation_id) === conversationId) {
         setIsTypingRemote(false);
-        if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+        if (remoteTypingTimerRef.current) clearTimeout(remoteTypingTimerRef.current);
       } else if (lastEvent.type === "message_status_update" && String(lastEvent.payload.conversation_id) === conversationId) {
         setMessages((prev) =>
           prev.map((m) =>
@@ -149,11 +147,10 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
     setInputText("");
     setShowEmojiPicker(false);
 
-    // Stop typing indicator
     if (conversationId && conversationId !== "note-to-self") {
       sendTypingStop(Number(conversationId));
     }
-    if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+    if (localTypingTimerRef.current) clearTimeout(localTypingTimerRef.current);
     
     try {
       const newMsg = await fetchApi(`/conversations/${conversationId}/messages`, {
@@ -178,25 +175,30 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
     const val = e.target.value;
     setInputText(val);
 
-    if (val.trim().length > 0) {
-      if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
-      sendTypingStart(Number(conversationId));
+    if (conversationId && conversationId !== "note-to-self") {
+      if (val.trim().length > 0) {
+        if (localTypingTimerRef.current) clearTimeout(localTypingTimerRef.current);
+        sendTypingStart(Number(conversationId));
 
-      typingTimerRef.current = setTimeout(() => {
+        localTypingTimerRef.current = setTimeout(() => {
+          sendTypingStop(Number(conversationId));
+        }, 2500);
+      } else {
         sendTypingStop(Number(conversationId));
-      }, 3000);
-    } else if (val.trim().length === 0) {
-      sendTypingStop(Number(conversationId));
-      if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+        if (localTypingTimerRef.current) clearTimeout(localTypingTimerRef.current);
+      }
     }
   };
 
   useEffect(() => {
     return () => {
-      if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
-      sendTypingStop(Number(conversationId));
+      if (localTypingTimerRef.current) clearTimeout(localTypingTimerRef.current);
+      if (remoteTypingTimerRef.current) clearTimeout(remoteTypingTimerRef.current);
+      if (conversationId && conversationId !== "note-to-self") {
+        sendTypingStop(Number(conversationId));
+      }
     };
-  }, [conversationId, sendTypingStart, sendTypingStop]);
+  }, [conversationId, sendTypingStop]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

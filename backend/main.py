@@ -21,17 +21,18 @@ with engine.connect() as _conn:
         _conn.commit()
 
 
+from config import get_allowed_origins
+
 app = FastAPI(title="Signal Clone API")
 
-# Configure CORS
-origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
+# Configure CORS dynamically based on FRONTEND_URL env var
+allowed_origins = get_allowed_origins()
+if isinstance(allowed_origins, str):
+    allowed_origins = [allowed_origins]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -130,5 +130,25 @@ Frontend will run at `http://localhost:3000`.
 
 ---
 
+## 📌 Assumptions, Mocked Data & Evaluation Notes
+
+### 📋 Assumptions
+- **Authentication**: Simplified phone OTP authentication flow. Any phone number format is accepted and verified with a static OTP (`123456`) to allow easy testing without setting up external SMS gateways (e.g., Twilio).
+- **Encryption UI**: End-to-End Encryption (E2EE) is visually simulated via lock indicators, verification badges, and UI banners. In-flight data uses standard TLS (HTTPS/WSS) and backend database storage.
+- **Database Engine**: Uses SQLite (via SQLAlchemy ORM) for zero-config local setup. In a production environment, PostgreSQL with connection pooling would be used.
+
+### 🎭 Mocked Data
+- **Static OTP**: `123456` for instant login with any phone number.
+- **Pre-seeded Users & Conversations**: Seeded contacts, direct messages, and group chats (`seed.py`) to provide an active inbox upon first login.
+- **Avatars**: Dynamic fallback SVG avatars powered by [DiceBear](https://dicebear.com) based on username seeds.
+
+### 📝 Notes for Evaluators
+- **Testing Real-Time Messaging**: Open `http://localhost:3000` in two separate browser tabs/incognito windows with different phone numbers to test live WebSocket messaging, typing indicators, and read receipts (`✓✓`).
+- **Interactive API Docs**: Backend API endpoints and schemas can be inspected via FastAPI's interactive Swagger UI at `http://localhost:8000/docs`.
+- **Responsive Layout**: Adapts automatically between Desktop (dual-panel view) and Mobile (single-panel drawer navigation).
+
+---
+
 ## 📄 License
 MIT
+

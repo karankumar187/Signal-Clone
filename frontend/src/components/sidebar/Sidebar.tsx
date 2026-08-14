@@ -71,7 +71,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenNewChat, onOpenNewGroup 
   }, []);
 
   useEffect(() => {
-    if (lastMessage?.type === "message_new") loadData();
+    if (lastMessage?.type === "message_new" || lastMessage?.type === "message_status_update") {
+      loadData();
+    }
   }, [lastMessage]);
 
   useEffect(() => {

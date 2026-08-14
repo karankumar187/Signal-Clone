@@ -67,7 +67,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     const apiUrl = rawUrl.replace(/\/api\/?$/, "").replace(/\/$/, "");
     const socket = io(apiUrl, {
       path: "/socket.io",
-      transports: ["websocket", "polling"],
+      transports: ["polling", "websocket"],
       // Pass token in auth dict AND as a query param for Render proxy compatibility
       auth: { token },
       query: { token },
