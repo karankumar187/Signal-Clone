@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 router = APIRouter()
 
 @router.get("/", response_model=List[schemas.ConversationResponse])
-def get_conversations(
+async def get_conversations(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -18,6 +18,28 @@ def get_conversations(
     participants = db.query(models.Participant).filter(models.Participant.user_id == current_user.id).all()
     conversation_ids = [p.conversation_id for p in participants]
     
+    # Automatically mark incoming 'sent' messages targeting current_user as 'delivered'
+    if conversation_ids:
+        sent_messages = db.query(models.Message).filter(
+            models.Message.conversation_id.in_(conversation_ids),
+            models.Message.sender_id != current_user.id,
+            models.Message.status == "sent"
+        ).all()
+        if sent_messages:
+            for m in sent_messages:
+                m.status = "delivered"
+            db.commit()
+            try:
+                from socketio_server import emit_to_user
+                for m in sent_messages:
+                    await emit_to_user(m.sender_id, "message_status_update", {
+                        "message_id": m.id,
+                        "conversation_id": m.conversation_id,
+                        "status": "delivered"
+                    })
+            except Exception as e:
+                print("Error emitting delivered status:", e)
+
     conversations = db.query(models.Conversation).filter(models.Conversation.id.in_(conversation_ids)).all()
     
     result = []
@@ -231,12 +253,19 @@ async def create_message(
         models.Participant.conversation_id == conversation_id
     ).all()
 
+    from socketio_server import user_to_sids
+    is_delivered = False
+    for p in participants:
+        if p.user_id != current_user.id and p.user_id in user_to_sids:
+            is_delivered = True
+            break
+
     new_message = models.Message(
         conversation_id=conversation_id,
         sender_id=current_user.id,
         content=request.content,
         msg_type=request.msg_type,
-        status="sent"
+        status="delivered" if is_delivered else "sent"
     )
     db.add(new_message)
     db.commit()
