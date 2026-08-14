@@ -9,7 +9,7 @@ from config import get_allowed_origins
 # Create async Socket.io server (ASGI compatible)
 sio = socketio.AsyncServer(
     async_mode="asgi",
-    cors_allowed_origins=get_allowed_origins(),
+    cors_allowed_origins="*",
     logger=False,
     engineio_logger=False,
 )
