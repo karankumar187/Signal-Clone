@@ -12,9 +12,13 @@ export default function SettingsPage() {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    const currentTheme = (localStorage.getItem("signal_theme") as "dark" | "light") || "dark";
+    setTheme(currentTheme);
+
     fetchApi("/auth/me").then((u) => {
       setUser(u);
       setDisplayName(u.display_name || "");
@@ -22,6 +26,16 @@ export default function SettingsPage() {
       setAvatarUrl(u.avatar_url || "");
     });
   }, []);
+
+  const toggleTheme = (newTheme: "dark" | "light") => {
+    setTheme(newTheme);
+    localStorage.setItem("signal_theme", newTheme);
+    if (newTheme === "light") {
+      document.documentElement.setAttribute("data-theme", "light");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+    }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -133,6 +147,52 @@ export default function SettingsPage() {
           <button className={styles.saveBtn} onClick={handleSave} disabled={loading}>
             {loading ? "Saving..." : "Save Profile"}
           </button>
+        </div>
+
+        {/* Appearance / Theme Section */}
+        <div className={styles.section}>
+          <div className={styles.row}>
+            <div className={styles.rowLeft}>
+              <DevicesIcon size={18} color="var(--signal-icon)" />
+              <span>Theme / Mode</span>
+            </div>
+            <div style={{ display: "flex", gap: "6px", backgroundColor: "var(--signal-input-bg)", padding: "4px", borderRadius: "10px" }}>
+              <button
+                type="button"
+                onClick={() => toggleTheme("dark")}
+                style={{
+                  padding: "6px 16px",
+                  borderRadius: "7px",
+                  border: "none",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  backgroundColor: theme === "dark" ? "var(--signal-accent)" : "transparent",
+                  color: theme === "dark" ? "#ffffff" : "var(--signal-text-secondary)",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                Dark
+              </button>
+              <button
+                type="button"
+                onClick={() => toggleTheme("light")}
+                style={{
+                  padding: "6px 16px",
+                  borderRadius: "7px",
+                  border: "none",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  backgroundColor: theme === "light" ? "var(--signal-accent)" : "transparent",
+                  color: theme === "light" ? "#ffffff" : "var(--signal-text-secondary)",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                Light
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Placeholders / Coming Soon */}

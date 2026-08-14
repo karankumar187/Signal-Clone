@@ -297,7 +297,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
         height: "100%",
         maxHeight: "100vh",
         width: "100%",
-        backgroundColor: "#181818",
+        backgroundColor: "var(--signal-chat-bg)",
         position: "relative",
         overflow: "hidden",
       }}
@@ -312,8 +312,8 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          borderBottom: "1px solid #2c2c2c",
-          backgroundColor: "#181818",
+          borderBottom: "1px solid var(--signal-border)",
+          backgroundColor: "var(--signal-chat-bg)",
           flexShrink: 0,
         }}
         onClick={(e) => e.stopPropagation()}
@@ -324,7 +324,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
             onClick={() => router.push("/chats")}
             title="Back to chats"
           >
-            <ArrowLeftIcon size={20} color="#ffffff" />
+            <ArrowLeftIcon size={20} color="var(--signal-text-primary)" />
           </button>
           <div
             onClick={() => !isNoteToSelf && setShowDetails(true)}
@@ -520,8 +520,8 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
         {isNoteToSelf ? (
           <div
             style={{
-              backgroundColor: "#222222",
-              border: "1px solid #2f2f2f",
+              backgroundColor: "var(--signal-card-bg)",
+              border: "1px solid var(--signal-border)",
               borderRadius: "20px",
               padding: "28px 24px",
               maxWidth: "380px",
@@ -538,7 +538,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
             <div style={{ marginBottom: "2px", display: "flex", justifyContent: "center" }}>
               <NoteToSelfIcon size={64} />
             </div>
-            <h3 style={{ fontSize: "18px", fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", color: "#ffffff", margin: 0 }}>
+            <h3 style={{ fontSize: "18px", fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", color: "var(--signal-text-primary)", margin: 0 }}>
               Note to Self
               <VerifiedCheckIcon size={16} color="#3a76f0" />
             </h3>
@@ -546,7 +546,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
               <VerifiedCheckIcon size={12} color="#538bf3" />
               Official chat
             </div>
-            <p style={{ fontSize: "13px", lineHeight: 1.5, color: "#9e9e9e", textAlign: "center", margin: "2px 0 0 0" }}>
+            <p style={{ fontSize: "13px", lineHeight: 1.5, color: "var(--signal-text-secondary)", textAlign: "center", margin: "2px 0 0 0" }}>
               You can add notes for yourself in this chat. If your account has any linked devices, new notes will be synced.
             </p>
           </div>
@@ -575,7 +575,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
                 alignItems: "center",
                 justifyContent: "center",
                 zIndex: 2,
-                border: "3px solid #181818",
+                border: "3px solid var(--signal-chat-bg)",
               }}
             >
               <GroupPeopleIcon size={44} color="#7c5cbf" />
@@ -583,8 +583,8 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
             {/* Card body */}
             <div
               style={{
-                backgroundColor: "#222222",
-                border: "1px solid #2f2f2f",
+                backgroundColor: "var(--signal-card-bg)",
+                border: "1px solid var(--signal-border)",
                 borderRadius: "20px",
                 padding: "52px 28px 24px 28px",
                 width: "100%",
@@ -596,9 +596,9 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
                 boxSizing: "border-box",
               }}
             >
-              <h3 style={{ fontSize: "20px", fontWeight: 700, color: "#ffffff", margin: 0 }}>{name}</h3>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#9e9e9e", fontSize: "13px" }}>
-                <GroupPeopleIcon size={16} color="#9e9e9e" />
+              <h3 style={{ fontSize: "20px", fontWeight: 700, color: "var(--signal-text-primary)", margin: 0 }}>{name}</h3>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--signal-text-secondary)", fontSize: "13px" }}>
+                <GroupPeopleIcon size={16} color="var(--signal-text-secondary)" />
                 <span>
                   {(() => {
                     const others = (conversation?.participants || [])
@@ -636,8 +636,8 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
                 alignItems: "center",
                 justifyContent: "center",
                 zIndex: 2,
-                border: "3px solid #181818",
-                backgroundColor: "#181818",
+                border: "3px solid var(--signal-chat-bg)",
+                backgroundColor: "var(--signal-chat-bg)",
               }}
             >
               <img
@@ -649,8 +649,8 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
             {/* Card body */}
             <div
               style={{
-                backgroundColor: "#222222",
-                border: "1px solid #2f2f2f",
+                backgroundColor: "var(--signal-card-bg)",
+                border: "1px solid var(--signal-border)",
                 borderRadius: "20px",
                 padding: "52px 28px 24px 28px",
                 width: "100%",
@@ -662,18 +662,18 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
                 boxSizing: "border-box",
               }}
             >
-              <h3 style={{ fontSize: "20px", fontWeight: 700, color: "#ffffff", margin: 0 }}>{name}</h3>
+              <h3 style={{ fontSize: "20px", fontWeight: 700, color: "var(--signal-text-primary)", margin: 0 }}>{name}</h3>
               {otherParticipant?.phone && (
-                <p style={{ fontSize: "14px", color: "#9e9e9e", margin: 0 }}>{otherParticipant.phone}</p>
+                <p style={{ fontSize: "14px", color: "var(--signal-text-secondary)", margin: 0 }}>{otherParticipant.phone}</p>
               )}
               {otherParticipant?.about && (
-                <p style={{ fontSize: "13px", color: "#6e6e6e", margin: "4px 0 0 0", fontStyle: "italic" }}>"{otherParticipant.about}"</p>
+                <p style={{ fontSize: "13px", color: "var(--signal-text-secondary)", margin: "4px 0 0 0", fontStyle: "italic" }}>"{otherParticipant.about}"</p>
               )}
             </div>
           </div>
         )}
 
-        <div style={{ fontSize: "12px", color: "#808080", margin: "16px 0", textAlign: "center", width: "100%", fontWeight: 500 }}>
+        <div style={{ fontSize: "12px", color: "var(--signal-text-secondary)", margin: "16px 0", textAlign: "center", width: "100%", fontWeight: 500 }}>
           Today
         </div>
 
@@ -693,8 +693,8 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
                 ref={(el) => { messageRefs.current[String(m.id)] = el; }}
                 style={{
                   alignSelf: isSent ? "flex-end" : "flex-start",
-                  backgroundColor: isCurrentHit ? "#7c4f00" : isSearchMatch ? "#3d3000" : isSent ? "#2563eb" : "#2c2c2c",
-                  color: "#ffffff",
+                  backgroundColor: isCurrentHit ? "#7c4f00" : isSearchMatch ? "#3d3000" : isSent ? "var(--signal-blue-bubble)" : "var(--signal-received-bubble)",
+                  color: isSent ? "#ffffff" : "var(--signal-text-primary)",
                   padding: "10px 16px",
                   borderRadius: isSent ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
                   maxWidth: "65%",
@@ -702,7 +702,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
                   alignItems: "flex-end",
                   gap: "10px",
                   wordBreak: "break-word",
-                  boxShadow: isCurrentHit ? "0 0 0 2px #f59e0b" : "0 1px 2px rgba(0,0,0,0.2)",
+                  boxShadow: isCurrentHit ? "0 0 0 2px #f59e0b" : "0 1px 2px rgba(0,0,0,0.1)",
                 }}
               >
                 {isImage ? (
@@ -714,7 +714,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
                 ) : (
                   <span style={{ flex: 1 }}>{m.content}</span>
                 )}
-                <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "11px", opacity: 0.85, flexShrink: 0, marginBottom: "-2px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "11px", flexShrink: 0, marginBottom: "-2px", color: isSent ? "rgba(255,255,255,0.9)" : "var(--signal-text-secondary)" }}>
                   <span suppressHydrationWarning>
                     {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
                   </span>
@@ -779,7 +779,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
           boxSizing: "border-box",
           flexShrink: 0,
           position: "relative",
-          borderTop: "1px solid #232323",
+          borderTop: "1px solid var(--signal-border)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -790,37 +790,37 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
               position: "absolute",
               bottom: "64px",
               right: "24px",
-              backgroundColor: "#282828",
-              border: "1px solid #383838",
+              backgroundColor: "var(--signal-card-bg)",
+              border: "1px solid var(--signal-border)",
               borderRadius: "16px",
               padding: "8px",
               display: "flex",
               flexDirection: "column",
               gap: "4px",
-              boxShadow: "0 8px 24px rgba(0, 0, 0, 0.6)",
+              boxShadow: "0 8px 24px rgba(0, 0, 0, 0.3)",
               zIndex: 100,
               width: "180px",
             }}
           >
             <div
-              style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 14px", borderRadius: "10px", color: "#ffffff", fontSize: "13px", fontWeight: 500, cursor: "pointer" }}
+              style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 14px", borderRadius: "10px", color: "var(--signal-text-primary)", fontSize: "13px", fontWeight: 500, cursor: "pointer" }}
               onClick={() => fileInputRef.current?.click()}
             >
               <ImageIcon size={18} color="#3a76f0" />
               <span>Photos & videos</span>
             </div>
             <div
-              style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 14px", borderRadius: "10px", color: "#ffffff", fontSize: "13px", fontWeight: 500, cursor: "pointer" }}
+              style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 14px", borderRadius: "10px", color: "var(--signal-text-primary)", fontSize: "13px", fontWeight: 500, cursor: "pointer" }}
               onClick={() => alert("File upload coming soon!")}
             >
-              <FileIcon size={18} color="#a0a0a0" />
+              <FileIcon size={18} color="var(--signal-icon)" />
               <span>File</span>
             </div>
             <div
-              style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 14px", borderRadius: "10px", color: "#ffffff", fontSize: "13px", fontWeight: 500, cursor: "pointer" }}
+              style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 14px", borderRadius: "10px", color: "var(--signal-text-primary)", fontSize: "13px", fontWeight: 500, cursor: "pointer" }}
               onClick={() => alert("Poll creation coming soon!")}
             >
-              <PollIcon size={18} color="#a0a0a0" />
+              <PollIcon size={18} color="var(--signal-icon)" />
               <span>Poll</span>
             </div>
           </div>
@@ -833,14 +833,14 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
               position: "absolute",
               bottom: "64px",
               left: "24px",
-              backgroundColor: "#282828",
-              border: "1px solid #383838",
+              backgroundColor: "var(--signal-card-bg)",
+              border: "1px solid var(--signal-border)",
               borderRadius: "16px",
-              padding: "14px",
+              padding: "12px",
               display: "grid",
               gridTemplateColumns: "repeat(6, 1fr)",
               gap: "10px",
-              boxShadow: "0 8px 24px rgba(0, 0, 0, 0.6)",
+              boxShadow: "0 8px 24px rgba(0, 0, 0, 0.3)",
               zIndex: 100,
               fontSize: "22px",
               width: "280px",
@@ -858,19 +858,14 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
           </div>
         )}
 
-        <div style={{ color: "#808080", marginBottom: "6px", cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center", width: "100%" }}>
-          <ChevronUpIcon size={16} />
-        </div>
-
         {/* Horizontal Input Row */}
         <div
           style={{
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
-            justifyContent: "space-between",
+            gap: "12px",
             width: "100%",
-            gap: "10px",
             boxSizing: "border-box",
           }}
         >
@@ -879,7 +874,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
             style={{
               flex: 1,
               minWidth: 0,
-              backgroundColor: "#282828",
+              backgroundColor: "var(--signal-input-bg)",
               borderRadius: "24px",
               padding: "4px 12px",
               display: "flex",
@@ -899,7 +894,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
                 alignItems: "center",
                 justifyContent: "center",
                 flexShrink: 0,
-                color: "#a0a0a0",
+                color: "var(--signal-icon)",
                 cursor: "pointer",
                 border: "none",
                 background: "transparent",
@@ -920,7 +915,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ conversationId }) => {
                 flex: 1,
                 minWidth: 0,
                 background: "transparent",
-                color: "#ffffff",
+                color: "var(--signal-text-primary)",
                 fontSize: "14px",
                 padding: "8px 0",
                 border: "none",
