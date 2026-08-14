@@ -171,41 +171,70 @@ export const DoubleCheckIcon = ({ size = 15, color = "currentColor" }: { size?: 
 
 export const MessageStatusIcon = ({
   status = "sent",
-  size = 15,
+  size = 14,
   color = "currentColor",
 }: {
   status?: "sent" | "delivered" | "read";
   size?: number;
   color?: string;
 }) => {
-  const strokeWidth = 2.3;
+  const width = status === "sent" ? size : Math.round(size * 1.5);
+  const strokeWidth = 2.2;
+  const uniqueId = React.useId().replace(/:/g, "");
 
   if (status === "sent") {
-    // Single unfilled checkmark (WhatsApp single tick)
+    // Unfilled single circle tick
     return (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" style={{ display: "inline-block", verticalAlign: "middle" }}>
-        <path d="M20 6L9 17l-5-5" />
+      <svg width={width} height={size} viewBox="0 0 24 24" fill="none" style={{ display: "inline-block", verticalAlign: "middle" }}>
+        <circle cx="12" cy="12" r="9" stroke={color} strokeWidth={strokeWidth} opacity="0.75" />
+        <path d="M9 12.5l2 2 4-4" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" opacity="0.75" />
       </svg>
     );
   }
 
   if (status === "delivered") {
-    // Double unfilled checkmarks (WhatsApp double gray tick)
+    // Unfilled double circle tick
     return (
-      <svg width={Math.round(size * 1.35)} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" style={{ display: "inline-block", verticalAlign: "middle" }}>
-        <path d="M18 6L7 17l-5-5" />
-        <path d="M22 10l-7.5 7.5L13 16" />
+      <svg width={width} height={size} viewBox="0 0 36 24" fill="none" style={{ display: "inline-block", verticalAlign: "middle" }}>
+        <defs>
+          <mask id={`mask-overlap-${uniqueId}`}>
+            <rect width="100%" height="100%" fill="white" />
+            <circle cx="22" cy="12" r="10.5" fill="black" />
+          </mask>
+        </defs>
+        
+        {/* Left circle outline (masked to hide overlapping part) */}
+        <circle cx="12" cy="12" r="9" stroke={color} strokeWidth={strokeWidth} opacity="0.6" mask={`url(#mask-overlap-${uniqueId})`} />
+        <path d="M9 12.5l2 2 4-4" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" opacity="0.6" mask={`url(#mask-overlap-${uniqueId})`} />
+        
+        {/* Right circle outline */}
+        <circle cx="22" cy="12" r="9" stroke={color} strokeWidth={strokeWidth} opacity="0.9" />
+        <path d="M19 12.5l2 2 4-4" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" opacity="0.9" />
       </svg>
     );
   }
 
   // status === "read"
-  // Double filled / blue checkmarks (WhatsApp double blue tick)
-  const blueColor = "#34b7f1";
+  // Filled double circle tick
   return (
-    <svg width={Math.round(size * 1.35)} height={size} viewBox="0 0 24 24" fill="none" stroke={blueColor} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" style={{ display: "inline-block", verticalAlign: "middle" }}>
-      <path d="M18 6L7 17l-5-5" />
-      <path d="M22 10l-7.5 7.5L13 16" />
+    <svg width={width} height={size} viewBox="0 0 36 24" fill="none" style={{ display: "inline-block", verticalAlign: "middle" }}>
+      <defs>
+        <mask id={`mask-read-left-${uniqueId}`}>
+          <circle cx="12" cy="12" r="9" fill="white" />
+          <circle cx="22" cy="12" r="10.5" fill="black" />
+          <path d="M9 12.5l2 2 4-4" stroke="black" strokeWidth={strokeWidth + 0.3} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        </mask>
+        <mask id={`mask-read-right-${uniqueId}`}>
+          <circle cx="22" cy="12" r="9" fill="white" />
+          <path d="M19 12.5l2 2 4-4" stroke="black" strokeWidth={strokeWidth + 0.3} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        </mask>
+      </defs>
+
+      {/* Left circle (solid with transparent checkmark) */}
+      <rect width="100%" height="100%" fill={color} opacity="0.75" mask={`url(#mask-read-left-${uniqueId})`} />
+      
+      {/* Right circle (solid with transparent checkmark) */}
+      <rect width="100%" height="100%" fill={color} opacity="0.95" mask={`url(#mask-read-right-${uniqueId})`} />
     </svg>
   );
 };
